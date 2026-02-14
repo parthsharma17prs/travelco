@@ -3,11 +3,13 @@ import classNames from 'classnames';
 import { Link, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import ReservationForm from './ReservationForm';
+import { useAuth } from '../hooks/useAuth';
 
 export default function Header() {
     const [scrolled, setScrolled] = useState(false);
     const [showReserve, setShowReserve] = useState(false);
     const location = useLocation();
+    const { user, logout } = useAuth();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -63,13 +65,39 @@ export default function Header() {
                 </div>
 
                 <div className="flex items-center gap-6">
-                    <Link to="/contact" className="hidden md:block text-white text-sm font-semibold hover:text-brand-gold transition-colors">Login</Link>
-                    <button
-                        onClick={() => setShowReserve(true)}
-                        className="bg-white text-black px-6 py-2 rounded-full font-sans text-sm font-semibold hover:scale-105 transition-transform hover:bg-brand-gold hover:text-white"
-                    >
-                        Reserve
-                    </button>
+                    {user ? (
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-brand-gold text-white flex items-center justify-center font-bold text-xs uppercase">
+                                {user.name.charAt(0)}
+                            </div>
+                            <span className="text-white text-sm font-semibold hidden md:block">
+                                {user.email === 'demo@travelco.com' ? 'Guest' : user.name}
+                            </span>
+                            <button
+                                onClick={logout}
+                                className="text-white/40 text-xs hover:text-white transition-colors ml-2"
+                            >
+                                Logout
+                            </button>
+                        </div>
+                    ) : (
+                        <Link to="/login" className="hidden md:block text-white text-sm font-semibold hover:text-brand-gold transition-colors">Login</Link>
+                    )}
+                    {user ? (
+                        <button
+                            onClick={() => setShowReserve(true)}
+                            className="bg-white text-black px-6 py-2 rounded-full font-sans text-sm font-semibold hover:scale-105 transition-transform hover:bg-brand-gold hover:text-white"
+                        >
+                            Reserve
+                        </button>
+                    ) : (
+                        <Link
+                            to="/login"
+                            className="bg-white text-black px-6 py-2 rounded-full font-sans text-sm font-semibold hover:scale-105 transition-transform hover:bg-brand-gold hover:text-white"
+                        >
+                            Reserve
+                        </Link>
+                    )}
                 </div>
             </header>
 
